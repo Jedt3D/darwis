@@ -140,9 +140,11 @@ spec/
 
 ### Current Settings
 - `expect_with: :rspec`, `mock_with: :rspec`
-- `syntax: :expect`, `color: true`, `profile: 10`
+- `color: true`, `warnings: false`
 - `filter_run_when_matching: :focus`
 - `order: :random`, `aggregate_failures: true`
+- `run_all_when_everything_filtered: true`
+- `default_formatter: 'doc'`
 
 ### Best Practices
 - Independent tests (use DatabaseCleaner)
