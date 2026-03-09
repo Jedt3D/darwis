@@ -1,7 +1,8 @@
-require 'bundler/setup'
-require 'roda'
-require 'json'
-require_relative '../app/app'
+require "bundler/setup"
+require "roda"
+require "json"
+require "active_record"
+require_relative "../app/app"
 
 RSpec.configure do |config|
   config.expect_with :rspec
@@ -15,7 +16,7 @@ RSpec.configure do |config|
   config.order = :random
   Kernel.srand config.seed
 
-  config.default_formatter = 'doc'
+  config.default_formatter = "doc"
 
   config.define_derived_metadata(file_path: %r{/spec/}) do |metadata|
     metadata[:aggregate_failures] = true

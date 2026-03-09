@@ -2,12 +2,10 @@ FROM ruby:3.3.7-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache build-base sqlite-dev sqlite
+RUN apk add --no-cache build-base sqlite-dev sqlite libffi-dev
 
 COPY Gemfile ./
-RUN bundle config force_ruby_platform true && \
-    bundle config build.sqlite3 --with-system-libraries && \
-    bundle install
+RUN bundle install
 
 COPY . .
 

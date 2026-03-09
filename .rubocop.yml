@@ -4,11 +4,9 @@ AllCops:
   SuggestExtensions: false
   Exclude:
     - "vendor/**/*"
-    - "db/schema.rb"
 
 plugins:
   - rubocop-rake
-  - rubocop-sequel
   - rubocop-thread_safety
   - rubocop-capybara
 

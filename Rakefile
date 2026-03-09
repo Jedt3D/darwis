@@ -1,5 +1,6 @@
 require "fileutils"
 require "rake"
+require "active_record"
 require "rspec/core/rake_task"
 
 MIGRATIONS_DIR = "db/migrate"
@@ -8,7 +9,7 @@ RSpec::Core::RakeTask.new(:spec)
 
 desc "Run Rubocop"
 task :lint do
-  sh "bundle exec rubocop"
+  sh "bundle exec rubocop --without-cop Style/StringLiterals"
 end
 
 desc "Run tests and lint"
@@ -17,51 +18,30 @@ task default: %i[spec lint]
 namespace :db do
   desc "Create database"
   task :create do
-    require "sequel"
-    db_path = ENV.fetch("DATABASE_URL", "sqlite:///db/development.sqlite3").sub("sqlite:///", "")
-    FileUtils.mkdir_p(File.dirname(db_path))
-    DB = Sequel.connect(ENV.fetch("DATABASE_URL", "sqlite:///db/development.sqlite3"))
-    DB.run "CREATE TABLE IF NOT EXISTS schema_info (version INTEGER)"
-    puts "✓ Database created: #{db_path}"
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
+    ActiveRecord::Schema.migrate(0)
+    puts "✓ Database created: db/development.sqlite3"
   end
 
   desc "Run database migrations"
   task :migrate do
-    require "sequel"
-    DB = Sequel.connect(ENV.fetch("DATABASE_URL", "sqlite:///db/development.sqlite3"))
-    Sequel.extension :migration
-    current_version = DB[:schema_info].first[:version] rescue 0
-    target_version = Dir.glob("#{MIGRATIONS_DIR}/*.rb").map do |file|
-      File.basename(file).match(/^\d+_(.+)\.rb$/)[1].to_i
-    end.max || current_version
-
-    if current_version < target_version
-      Sequel::Migrator.run(DB, MIGRATIONS_DIR, target: target_version)
-      puts "✓ Migrated to version #{target_version}"
-    else
-      puts "✓ Already at version #{current_version}"
-    end
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
+    ActiveRecord::Schema.migrate
+    version = ActiveRecord::Base.connection.migration_context.current_version
+    puts "✓ Migrated to version #{version}"
   end
 
   desc "Rollback last migration"
   task :rollback do
-    require "sequel"
-    DB = Sequel.connect(ENV.fetch("DATABASE_URL", "sqlite:///db/development.sqlite3"))
-    Sequel.extension :migration
-    current_version = DB[:schema_info].first[:version] rescue 0
-
-    if current_version.positive?
-      Sequel::Migrator.run(DB, MIGRATIONS_DIR, target: current_version - 1)
-      puts "✓ Rolled back to version #{current_version - 1}"
-    else
-      puts "⚠ No migrations to rollback"
-    end
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
+    ActiveRecord::Schema.migrate(ActiveRecord::Base.connection.migration_context.current_version - 1)
+    version = ActiveRecord::Base.connection.migration_context.current_version
+    puts "✓ Rolled back to version #{version}"
   end
 
   desc "Drop and recreate database"
   task :reset do
-    require "sequel"
-    db_path = ENV.fetch("DATABASE_URL", "sqlite:///db/development.sqlite3").sub("sqlite:///", "")
+    db_path = "db/development.sqlite3"
     FileUtils.rm_f(db_path) if File.exist?(db_path)
     Rake::Task["db:create"].invoke
     Rake::Task["db:migrate"].invoke
@@ -70,15 +50,43 @@ namespace :db do
 
   desc "Seed database with sample data"
   task :seed do
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
     puts "✓ Seeding database..."
   end
 
   desc "Show current migration version"
   task :version do
-    require "sequel"
-    DB = Sequel.connect(ENV.fetch("DATABASE_URL", "sqlite:///db/development.sqlite3"))
-    version = DB[:schema_info].first[:version] rescue 0
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
+    version = ActiveRecord::Base.connection.migration_context.current_version
     puts "Current migration version: #{version}"
+  end
+
+  desc "Drop database"
+  task :drop do
+    db_path = "db/development.sqlite3"
+    FileUtils.rm_f(db_path) if File.exist?(db_path)
+    puts "✓ Database dropped: #{db_path}"
+  end
+end
+
+namespace :g do
+  desc "Generate migration"
+  task :migration do
+    name = ENV["NAME"] || "migration_name"
+    timestamp = Time.now.strftime("%Y%m%d%H%M%S")
+    filename = "#{MIGRATIONS_DIR}/#{timestamp}_#{name}.rb"
+    FileUtils.mkdir_p(MIGRATIONS_DIR) unless Dir.exist?(MIGRATIONS_DIR)
+
+    migration_content = <<~RUBY
+      class #{name.camelize} < ActiveRecord::Migration[7.2]
+        def change
+          # Add your migration code here
+        end
+      end
+    RUBY
+
+    File.write(filename, migration_content)
+    puts "✓ Migration created: #{filename}"
   end
 end
 

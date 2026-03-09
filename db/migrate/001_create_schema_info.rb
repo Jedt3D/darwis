@@ -1,11 +1,7 @@
-Sequel.migration do
-  up do
-    create_table(:schema_info) do
-      Integer :version, null: false, default: 0
+class CreateSchemaInfo < ActiveRecord::Migration[7.2]
+  def change
+    create_table :schema_migrations do |t|
+      t.string :version
     end
-  end
-
-  down do
-    drop_table(:schema_info)
   end
 end

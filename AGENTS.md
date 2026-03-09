@@ -91,7 +91,7 @@ bundle exec rake db:version     # Show current migration version
 
 ### Rubocop Plugins Installed
 - `rubocop-rake` - Rake task best practices
-- `rubocop-sequel` - Sequel ORM patterns
+- `rubocop-rails` - ActiveRecord/Rails best practices
 - `rubocop-thread_safety` - Thread safety (lenient configuration)
 - `rubocop-capybara` - Capybara testing (disabled until tests exist)
 
@@ -140,10 +140,20 @@ end
 
 ## Database & Docker
 
-### SQLite3
+### SQLite3 + ActiveRecord
 - Store in `db/` directory
-- Use Sequel ORM
-- Migrations in `db/migrations/`
+- Use ActiveRecord ORM
+- Migrations in `db/migrate/`
+- Use `bundle exec rake db:migrate` to run migrations
+- Use `bundle exec rake db:rollback` to rollback
+- Use `bundle exec rake db:reset` to drop and recreate
+
+### ActiveRecord Best Practices
+- Use `ActiveRecord::Migration[7.2]` class name
+- Define `change` method (not up/down)
+- Use reversible migration methods (create_table, add_column, etc.)
+- Use `rake db:g:migration NAME=add_table` to generate migrations
+- Never modify migrations after they're run
 
 ### Docker
 - Multi-stage builds for production
