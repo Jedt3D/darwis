@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "9292:9292"
+    volumes:
+      - .:/app
+      - /app/vendor/bundle
+    environment:
+      - RACK_ENV=development
+      - SESSION_SECRET=dev_secret_change_in_production
+    command: bundle exec rackup -o 0.0.0.0 -p 9292
+
+volumes:
+  bundle:
