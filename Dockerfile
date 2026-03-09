@@ -4,8 +4,8 @@ WORKDIR /app
 
 RUN apk add --no-cache build-base sqlite-dev
 
-COPY Gemfile Gemfile.lock ./
-RUN bundle install --without development test
+COPY Gemfile ./
+RUN bundle install
 
 COPY . .
 

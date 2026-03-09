@@ -1,14 +1,9 @@
 require 'roda'
-require 'sequel'
+require 'json'
 
 class App < Roda
   plugin :render, engine: 'erb', views: 'app/views'
-  plugin :session, secret: ENV.fetch('SESSION_SECRET')
-  plugin :csrf
-  plugin :h
   plugin :static, root: 'app/public', urls: ['/css', '/js', '/images']
-
-  DB = Sequel.connect(ENV.fetch('DATABASE_URL', 'sqlite:///db/development.sqlite3'))
 
   route do |r|
     r.on "api" do
@@ -20,7 +15,7 @@ class App < Roda
     end
 
     r.root do
-      response.write "Hello from Darwis!"
+      render 'index'
     end
   end
 end
