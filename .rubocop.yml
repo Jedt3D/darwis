@@ -3,8 +3,23 @@ AllCops:
   NewCops: enable
   SuggestExtensions: false
   Exclude:
-    - 'vendor/**/*'
-    - 'db/schema.rb'
+    - "vendor/**/*"
+    - "db/schema.rb"
+
+plugins:
+  - rubocop-rake
+  - rubocop-sequel
+  - rubocop-thread_safety
+  - rubocop-capybara
+
+ThreadSafety/NewThread:
+  Enabled: false
+
+ThreadSafety/ClassInstanceVariable:
+  Enabled: false
+
+Capybara:
+  Enabled: false
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
@@ -24,4 +39,5 @@ Metrics/MethodLength:
 Metrics/BlockLength:
   Max: 30
   Exclude:
-    - 'spec/**/*'
+    - "spec/**/*"
+    - "Rakefile"

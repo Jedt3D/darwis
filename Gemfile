@@ -7,11 +7,16 @@ gem 'sequel', '~> 5.85'
 gem 'tilt', '~> 2.4'
 
 group :development, :test do
-  gem 'rspec', '~> 3.13'
-  gem 'rubocop', '~> 1.65'
-  gem 'rubocop-rspec', '~> 3.0'
   gem 'database_cleaner-sequel', '~> 2.0'
   gem 'rack-test', '~> 2.1'
+  gem 'rake', '~> 13.2'
+  gem 'rspec', '~> 3.13'
+  gem 'rubocop', '~> 1.65'
+  gem 'rubocop-capybara', '~> 2.21'
+  gem 'rubocop-rake', '~> 0.6'
+  gem 'rubocop-rspec', '~> 3.0'
+  gem 'rubocop-sequel', '~> 0.3'
+  gem 'rubocop-thread_safety', '~> 0.5'
 end
 
 group :development do

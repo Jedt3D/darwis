@@ -35,6 +35,22 @@ git checkout -b hotfix/critical-fix
 git push -u origin branch-name
 ```
 
+### Rake Tasks
+```bash
+bundle exec rake -T              # List all tasks
+bundle exec rake                 # Run default task (tests + lint)
+bundle exec rake lint            # Run Rubocop only
+bundle exec rake spec            # Run RSpec only
+
+# Database Tasks
+bundle exec rake db:create       # Create database
+bundle exec rake db:migrate      # Run migrations
+bundle exec rake db:rollback    # Rollback last migration
+bundle exec rake db:reset       # Drop and recreate database
+bundle exec rake db:seed        # Seed database
+bundle exec rake db:version     # Show current migration version
+```
+
 ## Code Style Guidelines
 
 ### Ruby 3.3+ Syntax
@@ -72,6 +88,19 @@ git push -u origin branch-name
 - Raise with descriptive messages
 - Use pattern matching in rescue blocks
 - Never expose stack traces in production
+
+### Rubocop Plugins Installed
+- `rubocop-rake` - Rake task best practices
+- `rubocop-sequel` - Sequel ORM patterns
+- `rubocop-thread_safety` - Thread safety (lenient configuration)
+- `rubocop-capybara` - Capybara testing (disabled until tests exist)
+
+### Thread Safety Configuration
+Thread safety checks are configured leniently:
+- New thread creation checks: Disabled
+- Shared global variable checks: Disabled
+- Instance variable in class methods: Disabled
+Enable specific checks as needed for concurrent code.
 
 ## Roda Patterns
 
