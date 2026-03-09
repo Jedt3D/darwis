@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'rack/test'
 
 RSpec.describe 'Root route' do
   let(:app) { App.freeze.app }
@@ -9,10 +10,10 @@ RSpec.describe 'Root route' do
       expect(response[0]).to eq(200)
     end
 
-    it 'returns hello message' do
+    it 'returns welcome message' do
       response = app.call(Rack::MockRequest.env_for('/'))
       body = response[2].join
-      expect(body).to include('Hello from Darwis!')
+      expect(body).to include('Welcome to Darwis')
     end
   end
 

@@ -11,6 +11,7 @@ group :development, :test do
   gem 'rubocop', '~> 1.65'
   gem 'rubocop-rspec', '~> 3.0'
   gem 'database_cleaner-sequel', '~> 2.0'
+  gem 'rack-test', '~> 2.1'
 end
 
 group :development do

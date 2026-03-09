@@ -9,6 +9,9 @@ AllCops:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
@@ -22,18 +25,3 @@ Metrics/BlockLength:
   Max: 30
   Exclude:
     - 'spec/**/*'
-
-RSpec/ExampleLength:
-  Max: 20
-
-RSpec/MultipleExpectations:
-  Max: 5
-
-RSpec/NestedGroups:
-  Max: 4
-
-RSpec/DescribeClass:
-  Enabled: false
-
-RSpec/MessageSpies:
-  EnforcedStyle: receive
