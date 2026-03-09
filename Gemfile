@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '3.3.0'
+ruby '3.3.7'
 
 gem 'roda', '~> 3.90'
 gem 'sqlite3', '~> 1.7'

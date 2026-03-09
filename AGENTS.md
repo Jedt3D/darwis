@@ -1,7 +1,7 @@
 # Darwis Project - Agent Configuration
 
 ## Project Overview
-Ruby 3.3.x Roda framework app with SQLite3, Docker, RSpec TDD, Rubocop. Integrates OpenSpec and RubyLLM.
+Ruby 3.3.7 Roda framework app with SQLite3, Docker, RSpec TDD, Rubocop. Integrates OpenSpec and RubyLLM.
 
 ## Essential Commands
 
