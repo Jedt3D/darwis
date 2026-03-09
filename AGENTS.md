@@ -1,37 +1,33 @@
 # Darwis Project - Agent Configuration
 
 ## Project Overview
-Ruby 3.3.x Roda framework application with SQLite3 database, Docker deployment, TDD with RSpec, and Rubocop for code quality. Integrates OpenSpec and RubyLLM for AI/LLM capabilities.
+Ruby 3.3.x Roda framework app with SQLite3, Docker, RSpec TDD, Rubocop. Integrates OpenSpec and RubyLLM.
 
 ## Essential Commands
 
-### Build Commands
+### Build
 ```bash
-bundle install                    # Install Ruby dependencies
-docker build -t darwis .          # Build Docker image
-docker-compose up                 # Start all services
-docker-compose up -d             # Start in detached mode
-docker-compose down              # Stop all services
-docker-compose logs -f           # Follow logs
+bundle install                    # Install deps
+docker build -t darwis .          # Build image
+docker-compose up -d             # Start services
+docker-compose down              # Stop services
 ```
 
-### Linting
+### Lint
 ```bash
-bundle exec rubocop                                    # Check code style
-bundle exec rubocop --auto-correct                     # Auto-fix issues
-bundle exec rubocop --format json --out rubocop.json   # JSON output
+bundle exec rubocop                                    # Check style
+bundle exec rubocop --auto-correct                     # Auto-fix
 ```
 
-### Testing
+### Test
 ```bash
-bundle exec rspec                              # Run all tests
-bundle exec rspec spec/routes/root_spec.rb     # Run single test file
-bundle exec rspec --tag integration            # Run tagged tests
-bundle exec rspec --format documentation      # Verbose output
-bundle exec rspec --only-failures             # Rerun failed tests
+bundle exec rspec                              # All tests
+bundle exec rspec spec/routes/root_spec.rb     # Single file
+bundle exec rspec --tag integration            # Tagged tests
+bundle exec rspec --format documentation      # Verbose
 ```
 
-### Git Workflow
+### Git
 ```bash
 git checkout -b feature/feature-name
 git checkout -b bugfix/issue-description
@@ -42,78 +38,51 @@ git push -u origin branch-name
 ## Code Style Guidelines
 
 ### Ruby 3.3+ Syntax
-- Use pattern matching: `case shape in {x:, y:} then ...`
-- Hash shorthand syntax: `{x:, y:}` instead of `{x: x, y: y}`
+- Pattern matching: `case shape in {x:, y:} then ...`
+- Hash shorthand: `{x:, y:}` instead of `{x: x, y: y}`
 - Endless methods: `def greet = "Hello"`
-- Numbered parameters: `array.each { _1.to_s }`
-- Squiggly heredocs for indentation: `<<~~TEXT`
-- Use safe navigation (`&.`) instead of `try`
+- Numbered params: `array.each { _1.to_s }`
+- Safe navigation: `&.` instead of `try`
 
 ### Roda Conventions
-- Use routing tree with `route { |r| ... }` block
-- Load plugins at class level, not in route block
+- Use routing tree: `route { |r| ... }`
+- Load plugins at class level
 - Use `r.root` for root path
-- Nest routes logically with `r.on "path" do ... end`
-- Use `r.get`, `r.post` for HTTP method matching
-- Use `r.is "path"` for exact path matching
-- Use `r.on "path"` for prefix matching
-- Keep routes thin, delegate business logic to services
+- Nest routes: `r.on "path" do ... end`
+- Use `r.get`, `r.post` for HTTP methods
+- `r.is "path"` for exact, `r.on "path"` for prefix
+- Keep routes thin, delegate to services
 
-### Import Organization
-Order of imports:
-1. Ruby standard library
+### Import Order
+1. Ruby stdlib
 2. External gems
-3. Internal application files
-4. Test helpers (in specs)
-
-Example:
-```ruby
-require 'json'
-require 'roda'
-require 'sequel'
-
-require_relative './models/user'
-require_relative './services/auth_service'
-
-RSpec.configure do |config|
-  # configuration
-end
-```
+3. Internal files
+4. Test helpers (specs)
 
 ### Naming Conventions
 - Classes: PascalCase - `class UserService`
-- Methods: snake_case - `def get_user(id)`
-- Variables: snake_case - `user_name`
+- Methods/Variables: snake_case - `def get_user`, `user_name`
 - Constants: SCREAMING_SNAKE_CASE - `MAX_RETRIES`
 - Files: snake_case - `user_service.rb`
 - Test files: append `_spec.rb` - `user_spec.rb`
 
 ### Error Handling
-- Create custom error classes inheriting from `StandardError`
-- Use Roda's error handling with `handle_exception`
-- Raise exceptions with descriptive messages
-- Use pattern matching in rescue blocks when appropriate
+- Custom errors: `class AuthenticationError < StandardError; end`
+- Roda handlers: `handle_exception(AuthenticationError) { |e| ... }`
+- Raise with descriptive messages
+- Use pattern matching in rescue blocks
 - Never expose stack traces in production
 
-```ruby
-class AuthenticationError < StandardError; end
-
-handle_exception(AuthenticationError) do |e|
-  response.status = 401
-  {error: e.message}.to_json
-end
-```
-
-## Roda-Specific Patterns
+## Roda Patterns
 
 ### Essential Plugins
-- `:render` - Template rendering (ERB, Haml, etc.)
-- `:session` - Session management with cookies
-- `:csrf` - CSRF protection for forms
+- `:render` - Template rendering (ERB, Haml)
+- `:session` - Session management
+- `:csrf` - CSRF protection
 - `:h` - HTML escaping helpers
 - `:static` - Serve static assets
 
-### Route Block Structure
+### Route Structure
 ```ruby
 class App < Roda
   plugin :render, engine: 'erb'
@@ -130,86 +99,59 @@ class App < Roda
         end
       end
     end
-
-    r.root do
-      render 'index'
-    end
+    r.root { render 'index' }
   end
 end
 ```
 
 ### Plugin Usage
-- Load plugins once at class level
-- Configure plugins immediately after loading
-- Avoid plugin loading in route blocks
-- Use plugin-specific methods as documented
+- Load once at class level
+- Configure immediately after loading
+- Avoid in route blocks
 
 ## Database & Docker
 
-### SQLite3 Setup
-- Store database in `db/` directory
-- Use Sequel ORM with SQLite3 adapter
-- Create migration files in `db/migrations/`
-- Store development/test data separately
+### SQLite3
+- Store in `db/` directory
+- Use Sequel ORM
+- Migrations in `db/migrations/`
 
-### Docker Workflow
-- Use multi-stage builds for production
-- Volume mount for development hot-reload
-- Keep database volume persistent
-- Use Alpine-based images for smaller size
+### Docker
+- Multi-stage builds for production
+- Volume mount for dev hot-reload
+- Use Alpine images
 
-## RSpec Configuration
+## RSpec Config
 
 ### Testing Patterns
-- Use `describe` for test subjects (classes, methods)
-- Use `context` for different scenarios/conditions
-- Use `it` for single behavior examples
-- Keep tests independent (no shared state)
-- Use `let` and `subject` for test data
-- Use `before`/`after` hooks for setup/teardown
+- `describe` for subjects, `context` for scenarios, `it` for examples
+- Use `let` and `subject` for data
+- `before`/`after` hooks for setup
 
-### Spec Organization
+### Structure
 ```
 spec/
-├── routes/          # Route handler tests
+├── routes/          # Route tests
 ├── models/          # Model tests
-├── services/        # Service object tests
-├── support/         # Shared contexts, helpers
-└── spec_helper.rb   # Global configuration
+├── services/        # Service tests
+├── support/         # Helpers
+└── spec_helper.rb   # Config
 ```
 
-### Current Configuration
-- `expect_with: :rspec` - Modern expectation syntax
-- `mock_with: :rspec` - RSpec mocking framework
-- `syntax: :expect` - Enforce expect syntax
-- `color: true` - Colored output
-- `profile: 10` - Show slowest 10 examples
-- `warnings: false` - Suppress warnings
-- `filter_run_when_matching: :focus` - Focus tag support
-- `order: :random` - Random test order
-- `aggregate_failures: true` - Show all failures
+### Current Settings
+- `expect_with: :rspec`, `mock_with: :rspec`
+- `syntax: :expect`, `color: true`, `profile: 10`
+- `filter_run_when_matching: :focus`
+- `order: :random`, `aggregate_failures: true`
 
-## Testing Best Practices
-
-### Test Isolation
-- Each test should be independent
-- Use `DatabaseCleaner` for database cleanup
-- Mock external API calls
-- Avoid shared state between examples
-
-### Test Coverage
-- Aim for >80% code coverage
-- Test happy path and error paths
-- Test edge cases and boundary conditions
-- Use shared contexts for repeated setup
-
-### Naming
-- Describe the behavior, not the implementation
+### Best Practices
+- Independent tests (use DatabaseCleaner)
+- >80% code coverage
+- Test happy/error paths and edge cases
+- Describe behavior, not implementation
 - Use `it "returns user data"` not `it "calls the database"`
-- Context names should describe conditions
-- Group related tests together
 
-## GitHub Integration
+## GitHub
 
 Repository: github.com/Jedt3D/darwis.git
 
@@ -217,22 +159,18 @@ Repository: github.com/Jedt3D/darwis.git
 ```
 type(scope): brief description
 
-Detailed explanation if needed
+- bullet points
 
-- bullet point
-- another bullet point
+Types: feat, fix, refactor, test, docs, chore
 ```
 
-Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
-
-## Development Workflow
+## Workflow
 
 1. Create feature branch
 2. Write failing tests (TDD)
 3. Implement feature
 4. Run tests: `bundle exec rspec`
 5. Run linter: `bundle exec rubocop`
-6. Fix any issues
-7. Commit with descriptive message
-8. Push to remote
-9. Create pull request
+6. Commit with descriptive message
+7. Push to remote
+8. Create pull request
