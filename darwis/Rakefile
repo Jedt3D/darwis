@@ -18,9 +18,11 @@ task default: %i[spec lint]
 namespace :db do
   desc "Create database"
   task :create do
-    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
-    ActiveRecord::Schema.migrate(0)
-    puts "✓ Database created: db/development.sqlite3"
+    db_path = "db/development.sqlite3"
+    FileUtils.mkdir_p("db") unless Dir.exist?("db")
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: db_path
+    ActiveRecord::Schema.define {}
+    puts "✓ Database created: #{db_path}"
   end
 
   desc "Run database migrations"

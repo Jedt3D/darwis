@@ -103,14 +103,14 @@ class ChatService
   end
 
   def self.call_zai_api(conversation)
-    return "I'm sorry, but I'm having trouble connecting to the AI service right now." unless defined?(Z::AI)
+    return "I'm sorry, but AI integration is not configured yet." unless defined?(Z)
 
     begin
       response = Z::AI.chat.completions.create(
         model: "glm-5",
         messages: conversation
       )
-      response.choices&.first&.message&.content || "No response from AI"
+      response.choices.first&.message&.content || "No response from AI"
     rescue Z::AI::APIAuthenticationError => e
       raise "AI API authentication error: #{e.message}"
     rescue Z::AI::APIRateLimitError => e

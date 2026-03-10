@@ -2,41 +2,65 @@
 
 # Current Session Information
 current_session: "2026-03-10"
-tokens_used: 59000
-tokens_remaining: 141000
+tokens_used: 65000
+tokens_remaining: 135000
 checkpoint_at: 175000
 
 # Current Agent Information
 current_agent: "darwis-server"
-task_id: "01"
-progress: 90
+task_id: "06"
+progress: 60
 blocking_issues: []
 
 # Agent History
 recent_work:
   - task_id: "01"
     agent: "darwis-server"
-    description: "Setup Docker and database"
+    description: "Implement Option 1: Self-Agentic LLM system"
     status: "completed"
-    completed_at: "2026-03-10T12:30:00Z"
+    completed_at: "2026-03-10T13:00:00Z"
 
   - task_id: "02"
     agent: "darwis-server"
-    description: "Generate users table migration"
+    description: "Create users table migration"
     status: "completed"
     completed_at: "2026-03-10T13:00:00Z"
+
+  - task_id: "03"
+    agent: "darwis-server"
+    description: "Remove Docker, switch to local development"
+    status: "completed"
+    completed_at: "2026-03-10T19:00:00Z"
+
+  - task_id: "04"
+    agent: "darwis-server"
+    description: "Fix code issues (app.rb, chat_service.rb, .env)"
+    status: "completed"
+    completed_at: "2026-03-10T19:30:00Z"
+
+  - task_id: "05"
+    agent: "darwis-server"
+    description: "Run migrations locally"
+    status: "completed"
+    completed_at: "2026-03-10T19:30:00Z"
+
+  - task_id: "06"
+    agent: "darwis-server"
+    description: "Test application and verify health endpoint"
+    status: "completed"
+    completed_at: "2026-03-10T20:00:00Z"
 
 # Available Agents
 agents:
   brain-orchestration:
     model: "GLM-4.7"
     status: "idle"
-    last_activity: "2026-03-10T12:00:00Z"
+    last_activity: "2026-03-10T13:00:00Z"
 
   darwis-server:
     model: "GLM-5.0"
     status: "active"
-    last_activity: "2026-03-10T13:00:00Z"
+    last_activity: "2026-03-10T20:00:00Z"
     base_directory: "/home/worajedt/RubymineProjects/darwis/darwis/"
 
   darwis-chat:
@@ -53,8 +77,13 @@ agents:
 pending_changes:
   - id: "01"
     location: "darwis/openspec/changes/chatbot-server-api/"
-    status: "pending"
+    status: "in_progress"
     assigned_agent: "darwis-server"
+
+  - id: "02"
+    location: "openspec/changes/archive/chatbot-with-history/"
+    status: "archived"
+    assigned_agent: null
 
 # Dependencies
 dependencies:
@@ -63,5 +92,48 @@ dependencies:
     reason: "API endpoints must be implemented before client can connect"
 
   darwis-server:
-    requires: ["zai-sdk-functional"]
-    reason: "SDK must work before integration"
+    requires: []
+    reason: "Local development, no external dependencies"
+
+# Development Environment
+environment:
+  approach: "local"
+  ruby_version: "3.4.8"
+  database: "sqlite3"
+  server_port: "9292"
+  docker_enabled: false
+
+# Current Tasks
+tasks:
+  - id: "07"
+    agent: "darwis-server"
+    description: "Implement API routes (sessions, chat)"
+    status: "pending"
+    priority: "high"
+    
+  - id: "08"
+    agent: "darwis-server"
+    description: "Add Z::AI mock for tests"
+    status: "pending"
+    priority: "medium"
+    
+  - id: "09"
+    agent: "darwis-server"
+    description: "Fix failing tests (24 failures)"
+    status: "pending"
+    priority: "medium"
+    depends_on: ["07", "08"]
+    
+  - id: "10"
+    agent: "darwis-server"
+    description: "Implement users API endpoints"
+    status: "pending"
+    priority: "medium"
+    depends_on: ["09"]
+
+  - id: "11"
+    agent: "darwis-server"
+    description: "Commit changes to git"
+    status: "pending"
+    priority: "low"
+    depends_on: ["09"]
