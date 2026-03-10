@@ -56,6 +56,29 @@ darwis/
 └── SESSION.md
 ```
 
+## Agent Coordination System
+
+### Session State
+Current state is tracked in `.opencode/session-state.yml`:
+- Current agent: Darwis Server
+- Tokens used: 59,000 / 200,000
+- Checkpoint at: 175,000 tokens
+- Agent history and dependencies tracked
+
+### Agent Instructions
+Current agent role is defined in `.opencode/agent-instructions.md`:
+- Trigger conditions for activating agent
+- Responsibilities and handoff triggers
+- Workflow and communication protocol
+- Success criteria and error handling
+
+### Agent Workflow
+1. **Start:** Read session-state.yml, confirm agent role
+2. **Execute:** Work on assigned task, follow TDD
+3. **Update:** Increment tokens_used, add completed task
+4. **Check:** Evaluate handoffs and blocking issues
+5. **Checkpoint:** Commit, document, save state at 175k tokens
+
 ## Next Steps
 
 ### 1. Run Migration
@@ -97,7 +120,7 @@ EOF
 ```
 
 ### 4. Update App to Mount Routes
-Modify `app/app.rb` to require the users routes
+Modify `app/app.rb` to require is users routes
 
 ### 5. Write Tests
 Create test files for users CRUD operations

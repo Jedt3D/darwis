@@ -1,0 +1,67 @@
+# Session State Management
+
+# Current Session Information
+current_session: "2026-03-10"
+tokens_used: 59000
+tokens_remaining: 141000
+checkpoint_at: 175000
+
+# Current Agent Information
+current_agent: "darwis-server"
+task_id: "01"
+progress: 90
+blocking_issues: []
+
+# Agent History
+recent_work:
+  - task_id: "01"
+    agent: "darwis-server"
+    description: "Setup Docker and database"
+    status: "completed"
+    completed_at: "2026-03-10T12:30:00Z"
+
+  - task_id: "02"
+    agent: "darwis-server"
+    description: "Generate users table migration"
+    status: "completed"
+    completed_at: "2026-03-10T13:00:00Z"
+
+# Available Agents
+agents:
+  brain-orchestration:
+    model: "GLM-4.7"
+    status: "idle"
+    last_activity: "2026-03-10T12:00:00Z"
+
+  darwis-server:
+    model: "GLM-5.0"
+    status: "active"
+    last_activity: "2026-03-10T13:00:00Z"
+    base_directory: "/home/worajedt/RubymineProjects/darwis/darwis/"
+
+  darwis-chat:
+    model: "GLM-4.7"
+    status: "pending"
+    base_directory: "/home/worajedt/RubymineProjects/darwis/darwis-chat/"
+
+  zai-sdk-maintenance:
+    model: "GLM-5.0"
+    status: "pending"
+    base_directory: "/home/worajedt/RubymineProjects/z-ai-sdk-ruby/"
+
+# OpenSpec Changes Tracking
+pending_changes:
+  - id: "01"
+    location: "darwis/openspec/changes/chatbot-server-api/"
+    status: "pending"
+    assigned_agent: "darwis-server"
+
+# Dependencies
+dependencies:
+  darwis-chat:
+    requires: ["darwis-server"]
+    reason: "API endpoints must be implemented before client can connect"
+
+  darwis-server:
+    requires: ["zai-sdk-functional"]
+    reason: "SDK must work before integration"
