@@ -1,0 +1,96 @@
+require "fileutils"
+require "rake"
+require "active_record"
+require "rspec/core/rake_task"
+
+MIGRATIONS_DIR = "db/migrate"
+
+RSpec::Core::RakeTask.new(:spec)
+
+desc "Run Rubocop"
+task :lint do
+  sh "bundle exec rubocop --without-cop Style/StringLiterals"
+end
+
+desc "Run tests and lint"
+task default: %i[spec lint]
+
+namespace :db do
+  desc "Create database"
+  task :create do
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
+    ActiveRecord::Schema.migrate(0)
+    puts "✓ Database created: db/development.sqlite3"
+  end
+
+  desc "Run database migrations"
+  task :migrate do
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
+    ActiveRecord::Schema.migrate
+    version = ActiveRecord::Base.connection.migration_context.current_version
+    puts "✓ Migrated to version #{version}"
+  end
+
+  desc "Rollback last migration"
+  task :rollback do
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
+    ActiveRecord::Schema.migrate(ActiveRecord::Base.connection.migration_context.current_version - 1)
+    version = ActiveRecord::Base.connection.migration_context.current_version
+    puts "✓ Rolled back to version #{version}"
+  end
+
+  desc "Drop and recreate database"
+  task :reset do
+    db_path = "db/development.sqlite3"
+    FileUtils.rm_f(db_path) if File.exist?(db_path)
+    Rake::Task["db:create"].invoke
+    Rake::Task["db:migrate"].invoke
+    puts "✓ Database reset complete"
+  end
+
+  desc "Seed database with sample data"
+  task :seed do
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
+    puts "✓ Seeding database..."
+  end
+
+  desc "Show current migration version"
+  task :version do
+    ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
+    version = ActiveRecord::Base.connection.migration_context.current_version
+    puts "Current migration version: #{version}"
+  end
+
+  desc "Drop database"
+  task :drop do
+    db_path = "db/development.sqlite3"
+    FileUtils.rm_f(db_path) if File.exist?(db_path)
+    puts "✓ Database dropped: #{db_path}"
+  end
+end
+
+namespace :g do
+  desc "Generate migration"
+  task :migration do
+    name = ENV["NAME"] || "migration_name"
+    timestamp = Time.now.strftime("%Y%m%d%H%M%S")
+    filename = "#{MIGRATIONS_DIR}/#{timestamp}_#{name}.rb"
+    FileUtils.mkdir_p(MIGRATIONS_DIR) unless Dir.exist?(MIGRATIONS_DIR)
+
+    migration_content = <<~RUBY
+      class #{name.camelize} < ActiveRecord::Migration[7.2]
+        def change
+          # Add your migration code here
+        end
+      end
+    RUBY
+
+    File.write(filename, migration_content)
+    puts "✓ Migration created: #{filename}"
+  end
+end
+
+desc "List all available tasks"
+task :list do
+  system "rake -T"
+end

@@ -4,17 +4,67 @@
 - **Date:** 2026-03-10
 - **Branch:** main
 - **Remote:** github.com/Jedt3D/darwis.git
-- **Status:** ✅ All changes committed and pushed
-- **Container:** Running on port 9292
+- **Status:** 🔄 In Progress - Darwis Server (Phase 2)
+- **Container:** Not running yet
 
 ## Tech Stack
-- **Ruby:** 3.3.7
+- **Ruby:** 3.4.8 (system)
 - **Framework:** Roda 3.101.0
 - **ORM:** ActiveRecord 7.2.3
 - **Database:** SQLite3 (pure Ruby adapter, Alpine compatible)
 - **Testing:** RSpec 3.13.2
 - **Linting:** Rubocop 1.85.1
 - **Container:** Docker (Alpine Linux)
+- **Orchestration:** Multi-agent system with Brain agent (GLM-4.7)
+- **Z.ai SDK:** From local path `/home/worajedt/RubymineProjects/z-ai-sdk-ruby/` (to be installed)
+- **TUI:** TTY Toolkit for CLI client (to be implemented in Phase 3)
+
+## Multi-Agent Architecture
+
+### Agent System
+
+The Darwis project uses a multi-agent system for coordinated development:
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    Brain Agent (GLM-4.7)               │
+│  - Monitors OpenSpec changes                               │
+│  - Routes tasks to specialized agents                         │
+│  - Coordinates handoffs                                       │
+│  - Updates AGENTS.md and SESSION.md after each completion   │
+└────────────┬────────────────────────────────────────────────┘
+             │
+    ┌────────┼────────┬───────────────────────┐
+    │        │        │                       │
+┌───▼────┐ ┌─▼──────┐  ┌──────────▼────────┐
+│ Darwis  │ │ Darwis  │  │  Z.ai SDK         │
+│ Server  │ │ -Chat   │  │  Maintenance       │
+│ (GLM-5.0) │  (GLM-4.7) │  (GLM-5.0)         │
+└────────┘ └────────┘  └───────────────────┘
+```
+
+### OpenSpec Changes
+
+- **chatbot-server-api** (Darwis Server Agent): REST API, database, Z.ai SDK integration
+- **chatbot-client-cli** (Darwis-Chat Agent): CLI with TTY Toolkit, command history, HTTP client
+- **sdk-bug-fix** (Z.ai SDK Agent): Bug fixes and enhancements to Z.ai Ruby SDK
+
+### Agent Workflow
+
+1. **User initiates change** (e.g., "add chatbot API")
+2. **Brain Agent creates OpenSpec change** (proposal, design, specs, tasks)
+3. **Brain Agent routes to appropriate specialized agent** based on location and specs
+4. **Specialized agent implements** according to `/opsx-apply`
+5. **Agent reports completion** to Brain Agent
+6. **Brain Agent updates documentation** (AGENTS.md, SESSION.md)
+7. **Brain Agent routes next phase** (e.g., server → client → SDK)
+
+### Token Management
+
+- **Token Budget:** 200,000 tokens per session
+- **Checkpoint:** ~175,000 tokens (estimated per task completion)
+- **Resume:** Load `.opencode/brain-state.yaml` and continue from next task
+- **Status:** Current session: ~28,000 tokens used
 
 ## Completed Tasks
 
@@ -58,33 +108,83 @@
 - Configured SSH authentication
 - Pushed all commits to GitHub
 
+### Phase 6: Multi-Agent Orchestration ✅
+- Archived old `chatbot-with-history` change
+- Created `multi-agent-orchestration` OpenSpec change
+- Created all artifacts: proposal, design, 5 specs, tasks
+- Created 4 skill files in `.opencode/skills/`
+- Updated AGENTS.md with multi-agent architecture
+- Updated SESSION.md with agent workflow
+- Created `.opencode/brain-state.yaml` for state tracking
+- Implemented token monitoring (estimated per task completion)
+- Established agent routing and handoff protocols
+
+### Phase 7: Darwis Server Development 🔄 (In Progress)
+- Created `chatbot-server-api` OpenSpec change
+- Added Z.ai Ruby SDK to Gemfile (from local path)
+- Added dotenv gem to Gemfile
+- Updated .env.example with ZAI_API_KEY
+- Created .env file with environment variables
+- Created database migrations: sessions, messages, indexes
+- Created models: Session, Message with associations and validations
+- Created Z.ai SDK initializer
+- Created ChatService with business logic
+- Created API routes: /api/chat/send, /api/sessions/*, /api/sessions/:id/messages
+- Implemented error handling with HTTP status codes
+- Created custom error classes: ValidationError, NotFoundError
+
 ## Current Directory Structure
 
 ```
 darwis/
 ├── .gitignore
-├── .ruby-version       # 3.3.7
-├── AGENTS.md          # ~200 lines of agent instructions
+├── .ruby-version       # 3.4.8 (system)
+├── AGENTS.md          # Agent configuration + multi-agent architecture
 ├── Gemfile
 ├── Dockerfile
 ├── docker-compose.yml
 ├── config.ru          # Rack application configuration
 ├── Rakefile           # Database & test tasks
-├── app/
-│   ├── app.rb         # Main Roda application
-│   ├── public/       # Static assets
-│   │   ├── css/
-│   │   ├── js/
-│   │   └── images/
-│   ├── routes/
-│   │   └── root.rb  # Root route handler
-│   └── views/
-│       └── index.erb # Home page template
-├── db/
-│   ├── development.sqlite3
-│   ├── migrate/
-│   │   └── 001_create_schema_info.rb
-│   └ migrations/       # Legacy Sequel migrations
+├── .opencode/
+│   ├── skills/         # Agent skill definitions
+│   │   ├── brain-orchestration/SKILL.md
+│   │   ├── darwis-server-agent/SKILL.md
+│   │   ├── darwis-chat-agent/SKILL.md
+│   │   └── zai-sdk-maintenance/SKILL.md
+│   └── brain-state.yaml  # Agent state tracking
+├── openspec/
+│   └── changes/
+│       ├── archive/
+│       │   └── chatbot-with-history/  # Archived old change
+│       ├── multi-agent-orchestration/  # Phase 1: Orchestration ✅
+│       └── chatbot-server-api/         # Phase 2: Server 🔄 (In Progress)
+├── darwis/            # Server application
+│   ├── .env                # Environment variables
+│   ├── .env.example          # Environment template
+│   ├── app/
+│   │   ├── app.rb         # Main Roda application with routes and error handling
+│   │   ├── models/
+│   │   │   ├── session.rb  # Session model
+│   │   │   └── message.rb # Message model
+│   │   ├── routes/
+│   │   │   ├── chat.rb      # Chat endpoint
+│   │   │   ├── sessions.rb   # Sessions endpoints
+│   │   │   └── root.rb      # Root route
+│   │   ├── services/
+│   │   │   └── chat_service.rb # Business logic
+│   │   └── config/initializers/
+│   │       └── z_ai.rb      # Z.ai SDK configuration
+│   ├── db/
+│   │   ├── development.sqlite3
+│   │   └── migrate/
+│   │       ├── 001_create_schema_info.rb
+│   │       ├── 002_create_sessions.rb
+│   │       ├── 003_create_messages.rb
+│   │       └── 004_add_indexes.rb
+│   ├── Gemfile               # Dependencies including Z.ai SDK and dotenv
+│   └── ...
+├── darwis-chat/       # Client application (empty, to be implemented in Phase 3)
+│   └── ...
 └── spec/
     ├── spec_helper.rb  # RSpec configuration
     └── routes/
@@ -179,46 +279,73 @@ bundle exec rubocop --autocorrect  # Auto-fix issues
 
 ## Next Steps
 
-### Immediate (Recommended)
-1. **Generate and run a migration**
-   ```bash
-   bundle exec rake g:migration NAME=add_users_table
-   bundle exec rake db:migrate
-   ```
+### Immediate (Phase 2: Darwis Server Development - IN PROGRESS 🔄)
+1. **Install dependencies** (blocked by bundler permissions)
+    ```bash
+    cd darwis
+    bundle install  # Run when bundler permissions resolved
+    ```
 
-2. **Create a model**
-   ```bash
-   touch app/models/user.rb
-   ```
+2. **Run migrations**
+    ```bash
+    cd darwis
+    rake db:migrate
+    ```
 
-3. **Add routes for CRUD operations**
-   - Add routes for users in app/routes/
-   - Update app/app.rb to mount routes
+3. **Write tests**
+    - Create spec/models/session_spec.rb
+    - Create spec/models/message_spec.rb
+    - Create spec/services/chat_service_spec.rb
+    - Create spec/routes/chat_spec.rb
+    - Create spec/routes/sessions_spec.rb
 
-### Medium Term
-4. **Add API endpoints**
-   - POST /api/users
-   - GET /api/users/:id
-   - PUT /api/users/:id
-   - DELETE /api/users/:id
+4. **Run tests and lint**
+    ```bash
+    cd darwis
+    bundle exec rspec
+    bundle exec rubocop
+    ```
 
-5. **Implement validation**
-   - Model validations in ActiveRecord models
-   - Request validation in Roda routes
+5. **Generate API documentation**
+    - Document all endpoints
+    - Add example requests/responses
+
+6. **Start server**
+    ```bash
+    cd darwis
+    rackup -p 9292
+    ```
+
+### Medium Term (Phase 3: Darwis-Chat Client Development - BLOCKED)
+3. **Implement Darwis-Chat Client** (Blocked by server completion)
+    - Triggered by Brain agent after Phase 2 completion
+    - Create OpenSpec change: `chatbot-client-cli`
+    - Use GLM-4.7 Coding Plan
+
+4. **Client Agent tasks** (to be implemented by GLM-4.7):
+    - Create darwis-chat/ directory structure
+    - Install TTY Toolkit gems
+    - Implement CLI with Readline
+    - Create HTTP client for Darwis server API
+    - Implement session management (/new, /switch, /list, /exit)
+    - Write tests for CLI interface
 
 ### Long Term
-6. **Add authentication**
-   - Session management with Roda
-   - CSRF protection
-   - JWT tokens for API
+5. **Z.ai SDK Enhancements** (As needed)
+    - Triggered by server agent bug reports
+    - Implemented by Z.ai SDK Agent (GLM-5.0)
+    - Push fixes to GitHub
 
-7. **Add OpenSpec integration**
-   - Configure OpenSpec for AI features
-   - Add RubyLLM for LLM integration
+6. **Multi-Agent System Refinements** (As needed)
+    - Improve routing logic
+    - Add automated dependency resolution
+    - Create real-time monitoring dashboard
+    - Implement session resume with state restoration
 
-8. **Add Capybara tests**
-   - Enable rubocop-capybara
-   - Write integration tests for UI
+### Token Management Reminder
+- **Current usage:** ~43,000 / 200,000 tokens
+- **Next checkpoint:** At ~175,000 tokens (~132,000 more)
+- **Resume:** Load `.opencode/brain-state.yaml` and continue from next task
 
 ## Commit History
 ```
@@ -301,7 +428,9 @@ After this session, you can:
 
 ## Session Summary
 
-**Time Spent:** Project initialization and ORM migration
+**Time Spent:** Phase 1 (Orchestration) + Phase 2 (Server) - In Progress
+**Token Usage:** ~43,000 / 200,000 (estimated)
+
 **Major Achievements:**
 1. ✅ Full Roda + ActiveRecord + SQLite3 stack configured
 2. ✅ Docker environment running on Alpine
@@ -309,11 +438,53 @@ After this session, you can:
 4. ✅ Code quality enforced with Rubocop
 5. ✅ Database migrations working
 6. ✅ Git workflow configured and pushed to GitHub
-7. ✅ Comprehensive documentation in AGENTS.md
+7. ✅ Multi-Agent orchestration system implemented (Phase 1)
+8. ✅ Darwis server API under development (Phase 2)
+9. ✅ Z.ai SDK integration designed and configured
+10. ✅ Database schema designed for sessions/messages
+11. ✅ Service layer (ChatService) created with business logic
+12. ✅ RESTful API endpoints designed
+13. ✅ Error handling with HTTP status codes implemented
 
-**Ready for:** Feature development, model creation, API endpoints, AI/LLM integration
+**Multi-Agent System Components:**
+- Brain Agent (GLM-4.7): Orchestrator, routing, documentation sync
+- Darwis Server Agent (GLM-5.0): Server API, database, Z.ai SDK integration
+- Darwis-Chat Agent (GLM-4.7): CLI client, TTY Toolkit, command history (BLOCKED)
+- Z.ai SDK Agent (GLM-5.0): SDK maintenance, bug fixes
+
+**OpenSpec Changes:**
+- `multi-agent-orchestration` ✅ Complete (Phase 1)
+- `chatbot-server-api` 🔄 In Progress (Phase 2) - ~60% complete
+
+**Darwis Server Progress (Phase 2):**
+- ✅ OpenSpec change created (proposal, design, 5 specs, tasks)
+- ✅ Gemfile updated with Z.ai SDK and dotenv
+- ✅ .env.example updated with ZAI_API_KEY
+- ✅ .env file created
+- ✅ Database migrations created (sessions, messages, indexes)
+- ✅ Models created (Session, Message)
+- ✅ Z.ai SDK initializer created
+- ✅ ChatService business logic created
+- ✅ API routes created (chat, sessions, error handling)
+- ⏳ Tests not yet written
+- ⏳ Gem installation pending (bundler permissions)
+- ⏳ Migrations not yet run
+- ⏳ Server not yet started
+- ⏳ Documentation not yet generated
+
+**Brain Agent State:**
+- Current session: Phase 2 in progress
+- Next action: Complete Phase 2 (bundler install, tests, docs, server startup)
+- Agents ready: Darwis Server Agent (unblocked), Darwis-Chat Agent (blocked by Server), Z.ai SDK Agent (idle)
+
+**Known Issues:**
+- Bundler permissions error: Cannot write to `/usr/lib/ruby/gems/3.4.0/cache`
+- Workaround: Gems can be installed with `gem install` or by fixing permissions
+- Z.ai SDK not yet installed (pending bundler)
+
+**Ready for:** Complete Phase 2 (tests, docs, server startup), then Phase 3 (Chat client)
 
 ---
 
-*Session saved: 2026-03-10*
-*Next session can start with: Generating a users table migration and creating a User model*
+*Session saved: 2026-03-10 (Phase 2: Darwis Server In Progress)*
+*Next session can start with: Complete Phase 2 by installing gems, writing tests, starting server*

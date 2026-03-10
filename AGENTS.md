@@ -1,13 +1,137 @@
 # Darwis Project - Agent Configuration
 
 ## Project Overview
-Ruby 3.3.7 Roda framework app with SQLite3, Docker, RSpec TDD, Rubocop. Integrates OpenSpec and RubyLLM.
+Ruby 3.4.8 Roda framework app with SQLite3, Docker, RSpec TDD, Rubocop. Multi-agent orchestration system with Brain agent coordinating Darwis server, Darwis-Chat client, and Z.ai SDK agents.
+
+## Multi-Agent Architecture
+
+### Agent System
+
+The Darwis project uses a multi-agent system for coordinated development:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Brain Agent (GLM-4.7)               │
+│  - Monitors OpenSpec changes                               │
+│  - Routes tasks to specialized agents                         │
+│  - Coordinates handoffs                                       │
+│  - Updates AGENTS.md and SESSION.md after each completion   │
+└────────────┬────────────────────────────────────────────────┘
+             │
+    ┌────────┼────────┬───────────────────────┐
+    │        │        │                       │
+┌───▼────┐ ┌─▼──────┐  ┌──────────▼────────┐
+│ Darwis  │ │ Darwis  │  │  Z.ai SDK         │
+│ Server  │ │ -Chat   │  │  Maintenance       │
+│ (GLM-5.0) │  (GLM-4.7) │  (GLM-5.0)         │
+└────────┘ └────────┘  └───────────────────┘
+```
+
+### Agent Responsibilities
+
+#### Brain Agent (GLM-4.7 Coding Plan)
+- Orchestrates all development activities
+- Routes OpenSpec changes to specialized agents based on location and specs
+- Monitors agent states and progress
+- Coordinates handoffs between agents
+- Implements token monitoring (estimated per task)
+- Triggers checkpoints at ~175,000 tokens
+- Updates AGENTS.md and SESSION.md after EACH agent completion
+- Maintains `.opencode/brain-state.yaml` for state tracking
+
+#### Darwis Server Agent (GLM-5.0 Coding Plan)
+- Implements RESTful API endpoints using Roda
+- Creates database migrations and models
+- Integrates Z.ai Ruby SDK from `/home/worajedt/RubymineProjects/z-ai-sdk-ruby`
+- Generates API documentation
+- Runs server for client testing
+- Reports SDK bugs to Brain agent
+- **Base Directory:** `/home/worajedt/RubymineProjects/darwis/darwis/`
+
+#### Darwis-Chat Agent (GLM-4.7 Coding Plan)
+- Implements CLI with TTY Toolkit
+- Adds per-session command history
+- Creates HTTP client for server communication
+- Implements session management commands (/new, /switch, /list, /exit)
+- Tests against running Darwis server
+- **Base Directory:** `/home/worajedt/RubymineProjects/darwis/darwis-chat/`
+
+#### Z.ai SDK Maintenance Agent (GLM-5.0 Coding Plan)
+- Fixes bugs reported by Darwis server agent
+- Adds new features to SDK
+- Maintains version control and release notes
+- Pushes updates to GitHub
+- **Base Directory:** `/home/worajedt/RubymineProjects/z-ai-sdk-ruby/`
+
+### Skill-Based Agent Activation
+
+Each agent has a `.opencode/skills/<agent-name>/SKILL.md` file that defines:
+- **Trigger Conditions:** When the agent should activate
+- **Responsibilities:** What the agent does
+- **Dependencies:** Required systems or agents
+- **Handoff Protocols:** How to communicate with Brain agent
+
+Skills are **instructions** that agents can adapt to, not strict rules.
+
+### Agent Routing Logic
+
+Brain agent routes OpenSpec changes based on:
+1. **Change location:**
+   - `darwis/openspec/changes/` → Darwis Server Agent
+   - `darwis-chat/openspec/changes/` → Darwis-Chat Agent
+   - `/home/worajedt/RubymineProjects/z-ai-sdk-ruby/openspec/changes/` → Z.ai SDK Agent
+
+2. **Change specs:**
+   - Contains `chat-api-endpoints`, `session-persistence`, `zai-sdk-integration` → Server Agent
+   - Contains `terminal-interface`, `command-history`, `api-client`, `session-management` → Chat Agent
+   - SDK bug report or feature request → SDK Agent
+
+3. **Dependencies:**
+   - Agents cannot start until dependencies are completed
+   - Blocking issues prevent dependent agents from starting
+
+### Token Monitoring & Session Management
+
+- **Token Budget:** 200,000 tokens per session
+- **Checkpoint Threshold:** ~175,000 tokens (estimated per task completion)
+- **Checkpoint Actions:**
+  1. Save all work in progress
+  2. Commit code with "checkpoint" message
+  3. Update SESSION.md with next steps
+  4. Close OpenCode session
+  5. User resumes by loading `.opencode/brain-state.yaml`
+  6. Continue from next task (auto-resume)
+
+### State Management
+
+Brain agent maintains state in `.opencode/brain-state.yaml`:
+- Agent statuses (idle, in-progress, completed, blocked)
+- Progress percentages
+- Current changes and dependencies
+- Blocking issues
+- Token usage estimates
+- Documentation update status
+
+### OpenSpec as Task Queue
+
+- OpenSpec changes serve as task units
+- Each change has: proposal, design, specs, tasks
+- Agents execute via `/opsx-apply`
+- Status tracked by OpenSpec
+- Brain agent monitors and routes changes
+
+### Documentation Sync
+
+Brain agent updates documentation after **EACH** agent completion:
+- **AGENTS.md:** Architecture, agent responsibilities, routing logic
+- **SESSION.md:** Workflow changes, progress, token usage
 
 ## Essential Commands
 
 ### Build
 ```bash
-bundle install                    # Install deps
+cd darwis                      # Navigate to darwis directory
+bundle install                  # Install deps (resolve bundler permissions first)
 docker build -t darwis .          # Build image
 docker-compose up -d             # Start services
 docker-compose down              # Stop services

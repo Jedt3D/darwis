@@ -1,0 +1,9 @@
+services:
+  web:
+    image: darwis
+    ports:
+      - "9292:9292"
+    environment:
+      - RACK_ENV=development
+      - SESSION_SECRET=dev_secret_change_in_production
+    command: bundle exec rackup -o 0.0.0.0 -p 9292
