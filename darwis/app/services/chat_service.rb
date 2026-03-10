@@ -1,12 +1,12 @@
 class ChatService
   def self.send_message(session_id:, content:)
     session = find_or_create_session(session_id)
-    user_message = create_message(session_id: session.id, role: 'user', content: content)
+    create_message(session_id: session.id, role: "user", content: content)
 
     conversation = build_conversation_context(session.id)
     ai_content = call_zai_api(conversation)
 
-    assistant_message = create_message(session_id: session.id, role: 'assistant', content: ai_content)
+    assistant_message = create_message(session_id: session.id, role: "assistant", content: ai_content)
 
     {
       id: assistant_message.id,
@@ -18,7 +18,7 @@ class ChatService
   end
 
   def self.create_session(name:)
-    timestamp = Time.now.strftime('%Y-%m-%d %H:%M:%S')
+    timestamp = Time.now.strftime("%Y-%m-%d %H:%M:%S")
     session_name = name.presence || "Chat #{timestamp}"
     Session.create(name: session_name)
   end
@@ -46,6 +46,7 @@ class ChatService
   def self.delete_session(id:)
     session = Session.find_by(id: id)
     return nil unless session
+
     session.destroy
   end
 
@@ -63,6 +64,7 @@ class ChatService
   def self.get_session_messages(id:)
     session = Session.find_by(id: id)
     return [] unless session
+
     session.messages.chronological.map do |msg|
       {
         id: msg.id,
@@ -73,8 +75,6 @@ class ChatService
       }
     end
   end
-
-  private
 
   def self.find_or_create_session(session_id)
     if session_id.present?
@@ -107,7 +107,7 @@ class ChatService
 
     begin
       response = Z::AI.chat.completions.create(
-        model: 'glm-5',
+        model: "glm-5",
         messages: conversation
       )
       response.choices&.first&.message&.content || "No response from AI"

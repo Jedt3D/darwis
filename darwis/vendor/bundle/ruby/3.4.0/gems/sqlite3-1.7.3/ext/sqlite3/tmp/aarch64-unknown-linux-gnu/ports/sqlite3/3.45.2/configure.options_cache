@@ -1,0 +1,1 @@
+["--host=aarch64-unknown-linux-gnu", "--enable-static", "--disable-shared", "--enable-shared=no", "--enable-static=yes", "--enable-fts5", "CC=gcc", "CFLAGS=-fPIC -O2 -fvisibility=hidden -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1", "--prefix=/home/worajedt/RubymineProjects/darwis/darwis/vendor/bundle/ruby/3.4.0/gems/sqlite3-1.7.3/ports/aarch64-unknown-linux-gnu/sqlite3/3.45.2"]

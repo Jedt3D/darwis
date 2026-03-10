@@ -3,32 +3,32 @@
 # Updated by Brain agent after each agent completion
 
 session:
-  id: "phase-1-multi-agent-orchestration"
-  token_usage_estimate: 28000
-  checkpoint_count: 0
-  last_checkpoint: null
+  id: "phase-2-checkpoint-1"
+  token_usage_estimate: 43000
+  checkpoint_count: 1
+  last_checkpoint: "phase-1-complete"
 
 agents:
   brain:
     model: "GLM-4.7 Coding Plan"
-    status: "in-progress"
-    progress: 70
-    current_change: "multi-agent-orchestration"
+    status: "idle"
+    progress: 100
+    current_change: null
     blocked_by: []
 
   darwis-server:
     model: "GLM-5.0 Coding Plan"
-    status: "idle"
-    progress: 0
-    current_change: null
-    blocked_by: []
+    status: "in-progress"
+    progress: 83
+    current_change: "chatbot-server-api"
+    blocked_by: ["bundler-permissions", "manual-verification"]
     base_directory: "/home/worajedt/RubymineProjects/darwis/darwis/"
 
   darwis-chat:
     model: "GLM-4.7 Coding Plan"
-    status: "idle"
+    status: "blocked"
     progress: 0
-    current_change: null
+    current_change: "chatbot-client-cli"
     blocked_by: ["darwis-server"]
     base_directory: "/home/worajedt/RubymineProjects/darwis/darwis-chat/"
 
@@ -44,7 +44,7 @@ agents:
 
 changes:
   - id: "multi-agent-orchestration"
-    status: "in-progress"
+    status: "completed"
     assigned_to: "brain"
     artifacts:
       - proposal.md
@@ -59,10 +59,19 @@ changes:
     blocks: []
 
   - id: "chatbot-server-api"
-    status: "pending"
+    status: "in-progress"
     assigned_to: "darwis-server"
+    artifacts:
+      - proposal.md
+      - design.md
+      - specs/zai-sdk-integration/spec.md
+      - specs/chat-api-endpoints/spec.md
+      - specs/session-persistence/spec.md
+      - specs/api-error-handling/spec.md
+      - specs/environment-configuration/spec.md
+      - tasks.md
     depends_on: ["multi-agent-orchestration"]
-    blocks: ["darwis-chat"]
+    blocks: ["chatbot-client-cli"]
 
   - id: "chatbot-client-cli"
     status: "pending"
@@ -72,15 +81,16 @@ changes:
 
 documentation:
   agents_md:
-    last_updated: null
+    last_updated: "2026-03-10"
     pending_updates: []
 
   session_md:
-    last_updated: null
+    last_updated: "2026-03-10"
     pending_updates: []
 
 token_monitoring:
-  total_tokens: 28000
-  tasks_completed: 7
+  total_tokens: 92000
+  tasks_completed: 66
   checkpoint_threshold: 175000
-  next_checkpoint_after: 147000
+  next_checkpoint_after: 83000
+  last_checkpoint_tokens: 43000

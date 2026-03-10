@@ -26,17 +26,16 @@ namespace :db do
   desc "Run database migrations"
   task :migrate do
     ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
-    ActiveRecord::Schema.migrate
-    version = ActiveRecord::Base.connection.migration_context.current_version
-    puts "✓ Migrated to version #{version}"
+    ActiveRecord::MigrationContext.new("db/migrate").migrate
+    puts "✓ Migrations complete"
   end
 
   desc "Rollback last migration"
   task :rollback do
     ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
-    ActiveRecord::Schema.migrate(ActiveRecord::Base.connection.migration_context.current_version - 1)
-    version = ActiveRecord::Base.connection.migration_context.current_version
-    puts "✓ Rolled back to version #{version}"
+    context = ActiveRecord::MigrationContext.new("db/migrate")
+    context.migrate(context.current_version - 1)
+    puts "✓ Rolled back to version #{context.current_version}"
   end
 
   desc "Drop and recreate database"
@@ -57,8 +56,8 @@ namespace :db do
   desc "Show current migration version"
   task :version do
     ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/development.sqlite3"
-    version = ActiveRecord::Base.connection.migration_context.current_version
-    puts "Current migration version: #{version}"
+    context = ActiveRecord::MigrationContext.new("db/migrate")
+    puts "Current migration version: #{context.current_version}"
   end
 
   desc "Drop database"

@@ -7,7 +7,6 @@ class CreateMessages < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    add_index :messages, :session_id
     add_check_constraint :messages, "role IN ('user', 'assistant')"
   end
 end

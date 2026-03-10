@@ -27,10 +27,10 @@
 
 ## 4. Z.ai SDK Integration
 
-- [ ] 4.1 Create darwis/config/initializers/z_ai.rb
-- [ ] 4.2 Configure Z::AI global client with ZAI_API_KEY
-- [ ] 4.3 Set default model to 'glm-5'
-- [ ] 4.4 Add error handling for missing API key
+- [x] 4.1 Create darwis/config/initializers/z_ai.rb
+- [x] 4.2 Configure Z::AI global client with ZAI_API_KEY
+- [x] 4.3 Set default model to 'glm-5'
+- [x] 4.4 Add error handling for missing API key
 - [ ] 4.5 Test Z.ai SDK initialization with valid API key
 - [ ] 4.6 Test Z.ai SDK initialization with missing API key
 
@@ -49,50 +49,50 @@
 
 ## 6. API Routes
 
-- [ ] 6.1 Update darwis/app/app.rb to load dotenv
-- [ ] 6.2 Update darwis/app/app.rb to load Z.ai SDK
-- [ ] 6.3 Add JSON response plugin
-- [ ] 6.4 Add error handler plugin for exceptions
-- [ ] 6.5 Create darwis/app/routes/chat.rb
-- [ ] 6.6 Create darwis/app/routes/sessions.rb
-- [ ] 6.7 Implement POST /api/chat/send route in chat.rb
-- [ ] 6.8 Implement POST /api/sessions route in sessions.rb
-- [ ] 6.9 Implement GET /api/sessions route in sessions.rb
-- [ ] 6.10 Implement GET /api/sessions/:id route in sessions.rb
-- [ ] 6.11 Implement DELETE /api/sessions/:id route in sessions.rb
-- [ ] 6.12 Implement GET /api/sessions/:id/messages route in sessions.rb
-- [ ] 6.13 Update darwis/app/app.rb to mount chat and sessions routes
+- [x] 6.1 Update darwis/app/app.rb to load dotenv
+- [x] 6.2 Update darwis/app/app.rb to load Z.ai SDK
+- [x] 6.3 Add JSON response plugin
+- [x] 6.4 Add error handler plugin for exceptions
+- [x] 6.5 Create darwis/app/routes/chat.rb
+- [x] 6.6 Create darwis/app/routes/sessions.rb
+- [x] 6.7 Implement POST /api/chat/send route in chat.rb
+- [x] 6.8 Implement POST /api/sessions route in sessions.rb
+- [x] 6.9 Implement GET /api/sessions route in sessions.rb
+- [x] 6.10 Implement GET /api/sessions/:id route in sessions.rb
+- [x] 6.11 Implement DELETE /api/sessions/:id route in sessions.rb
+- [x] 6.12 Implement GET /api/sessions/:id/messages route in sessions.rb
+- [x] 6.13 Update darwis/app/app.rb to mount chat and sessions routes
 
 ## 7. Error Handling
 
-- [ ] 7.1 Create custom error classes for API errors
-- [ ] 7.2 Add JSON error response helper method
-- [ ] 7.3 Add error handler for ValidationError
-- [ ] 7.4 Add error handler for NotFoundError
-- [ ] 7.5 Add error handler for Z::AI::APIAuthenticationError
-- [ ] 7.6 Add error handler for Z::AI::APIRateLimitError
-- [ ] 7.7 Add error handler for Z::AI::APIStatusError
-- [ ] 7.8 Add generic error handler for unexpected errors
+- [x] 7.1 Create custom error classes for API errors
+- [x] 7.2 Add JSON error response helper method
+- [x] 7.3 Add error handler for ValidationError
+- [x] 7.4 Add error handler for NotFoundError
+- [x] 7.5 Add error handler for Z::AI::APIAuthenticationError
+- [x] 7.6 Add error handler for Z::AI::APIRateLimitError
+- [x] 7.7 Add error handler for Z::AI::APIStatusError
+- [x] 7.8 Add generic error handler for unexpected errors
 
 ## 8. Testing
 
-- [ ] 8.1 Create darwis/spec/models/session_spec.rb
-- [ ] 8.2 Create darwis/spec/models/message_spec.rb
-- [ ] 8.3 Create darwis/spec/services/chat_service_spec.rb
-- [ ] 8.4 Create darwis/spec/routes/chat_spec.rb
-- [ ] 8.5 Create darwis/spec/routes/sessions_spec.rb
-- [ ] 8.6 Mock Z.ai SDK in tests
-- [ ] 8.7 Add integration tests for API endpoints
+- [x] 8.1 Create darwis/spec/models/session_spec.rb
+- [x] 8.2 Create darwis/spec/models/message_spec.rb
+- [x] 8.3 Create darwis/spec/services/chat_service_spec.rb
+- [x] 8.4 Create darwis/spec/routes/chat_spec.rb
+- [x] 8.5 Create darwis/spec/routes/sessions_spec.rb
+- [x] 8.6 Mock Z.ai SDK in tests
+- [x] 8.7 Add integration tests for API endpoints
 - [ ] 8.8 Run bundle exec rspec in darwis/ directory
 - [ ] 8.9 Ensure >80% code coverage
 
 ## 9. Documentation
 
-- [ ] 9.1 Generate API documentation
-- [ ] 9.2 Document environment variables in darwis/README.md
-- [ ] 9.3 Document API endpoints with examples
-- [ ] 9.4 Document error response formats
-- [ ] 9.5 Document database schema
+- [x] 9.1 Generate API documentation
+- [x] 9.2 Document environment variables in darwis/README.md
+- [x] 9.3 Document API endpoints with examples
+- [x] 9.4 Document error response formats
+- [x] 9.5 Document database schema
 - [ ] 9.6 Update darwis/.env.example with comments
 
 ## 10. Final Verification
